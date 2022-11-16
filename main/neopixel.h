@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #ifndef _NEOPIXEL_
 #define _NEOPIXEL_
 

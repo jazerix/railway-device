@@ -23,6 +23,7 @@
         "*.inc": "c",
         "ble_hs.h": "c",
         "neopixel.h": "c",
-        "ble_svc_gap.h": "c"
+        "ble_svc_gap.h": "c",
+        "stdbool.h": "c"
     }
 }

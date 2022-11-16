@@ -7,8 +7,9 @@
 #include "host/ble_hs.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
-
-#include "neopixel.h"
+#include "status.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 /*
 #define DEVICE_NAME "Railway Diagnostics"
@@ -160,12 +161,18 @@ void app_main(void)
     nimble_port_freertos_init(host_task);
     */
 
-    struct colors test = {
+    /*struct colors test = {
         .green = 0x00,
         .red = 0x00,
         .blue = 0xff,
         .other = 0xff
     };
 
-    espShow(18, &test, 4, true);  
+    espShow(18, &test, 4, true);*/
+
+    setStatus(LED_AWAITING_CONNECTION);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    setStatus(LED_IDLE);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    setStatus(LED_RECORDING);
 }
