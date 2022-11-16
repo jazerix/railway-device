@@ -8,6 +8,9 @@
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 
+#include "neopixel.h"
+
+/*
 #define DEVICE_NAME "Railway Diagnostics"
 uint8_t ble_addr_type;
 void ble_app_advertise(void);
@@ -114,10 +117,20 @@ void ble_app_on_sync(void)
 void host_task(void *param)
 {
     nimble_port_run();
-}
+}*/
+
+
+struct colors {
+    uint8_t green;
+    uint8_t red;
+    uint8_t blue;
+    uint8_t other;
+};
+
 
 void app_main(void)
 {
+    /*
     esp_err_t ret;
 
     nvs_flash_init();
@@ -145,4 +158,14 @@ void app_main(void)
 
     ble_hs_cfg.sync_cb = ble_app_on_sync;
     nimble_port_freertos_init(host_task);
+    */
+
+    struct colors test = {
+        .green = 0x00,
+        .red = 0x00,
+        .blue = 0xff,
+        .other = 0xff
+    };
+
+    espShow(18, &test, 4, true);  
 }

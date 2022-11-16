@@ -1,2 +1,2 @@
-idf_component_register(SRCS "main.c" "sdcard.c" 
+idf_component_register(SRCS "main.c" "sdcard.c" "neopixel.c" 
                     INCLUDE_DIRS ".")

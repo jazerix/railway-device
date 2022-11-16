@@ -19,6 +19,10 @@
         "random": "c",
         "*.ipp": "c",
         "unistd.h": "c",
-        "ble_svc_gatt.h": "c"
+        "ble_svc_gatt.h": "c",
+        "*.inc": "c",
+        "ble_hs.h": "c",
+        "neopixel.h": "c",
+        "ble_svc_gap.h": "c"
     }
 }
