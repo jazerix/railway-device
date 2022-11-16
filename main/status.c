@@ -67,7 +67,7 @@ void setStatus(int state)
 
     if (state == LED_AWAITING_CONNECTION)
     {
-        xTaskCreate(blueBlinking, "waiting for connection", 2048, NULL, 2, &xBlueLedHandler);
+        xTaskCreate(blueBlinking, "waiting for connection", 2000, NULL, 2, &xBlueLedHandler);
         return;
     }
 

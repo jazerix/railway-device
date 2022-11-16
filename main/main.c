@@ -11,13 +11,25 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-/*
 #define DEVICE_NAME "Railway Diagnostics"
 uint8_t ble_addr_type;
 void ble_app_advertise(void);
 
 #define DEVICE_INFO_SERVICE 0x180A
 #define MANUFACTURER_NAME 0x2A29
+
+static xTimerHandle btHandler;
+uint16_t conn_hdl;
+
+uint8_t battery_level = 100;
+void update_bt(void* params)
+{
+    if (battery_level-- == 0)
+    {
+        battery_level = 100;
+    }
+    ESP_LOGI("NOTIFY", "Battery level %d", battery_level);
+}
 
 static int device_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
@@ -27,14 +39,16 @@ static int device_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_g
 
 static int device_info(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    os_mbuf_append(ctxt->om, "Jazerix", strlen("Jazerix"));
+    os_mbuf_append(ctxt->om, "Niels Faurskov", strlen("Niels Faurskov"));
     return 0;
 }
 
 static int custom_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
-    if (ctxt->op == BLE_GATT_ACCESS_OP_READ_DSC)
+    ESP_LOGI("BLE", "CUSTOM HANDLER");
+    if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR)
     {
+        os_mbuf_append(ctxt->om, &battery_level, sizeof(battery_level));
         printf("reading");
     }
     else
@@ -43,6 +57,7 @@ static int custom_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble
     }
     return 0;
 }
+
 
 static const struct ble_gatt_svc_def gat_svcs[] = {
     {.type = BLE_GATT_SVC_TYPE_PRIMARY,
@@ -55,7 +70,14 @@ static const struct ble_gatt_svc_def gat_svcs[] = {
           .flags = BLE_GATT_CHR_F_WRITE,
           .access_cb = device_write},
          {0}}},
-    {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = BLE_UUID128_DECLARE(0xEE, 0xDD, 0xFA, 0xCB, 0xAF, 0x51, 0x4E, 0xC6, 0x8A, 0x7B, 0xC0, 0x1E, 0x66, 0x42, 0x71, 0xD7), .characteristics = (struct ble_gatt_chr_def[]){{.uuid = BLE_UUID128_DECLARE(0xee, 0xdd, 0xfa, 0xcc, 0xaf, 0x51, 0x4e, 0xc6, 0x8a, 0x7b, 0xc0, 0x1e, 0x66, 0x42, 0x71, 0xd7), .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY, .access_cb = custom_handler}, {0}}},
+    {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY, 
+        .uuid = BLE_UUID128_DECLARE(0xEE, 0xDD, 0xFA, 0xCB, 0xAF, 0x51, 0x4E, 0xC6, 0x8A, 0x7B, 0xC0, 0x1E, 0x66, 0x42, 0x71, 0xD7), 
+        .characteristics = (struct ble_gatt_chr_def[]){{
+            .uuid = BLE_UUID128_DECLARE(0xee, 0xdd, 0xfa, 0xcc, 0xaf, 0x51, 0x4e, 0xc6, 0x8a, 0x7b, 0xc0, 0x1e, 0x66, 0x42, 0x71, 0xd7), 
+            .flags = BLE_GATT_CHR_F_READ, 
+            .access_cb = custom_handler,
+        }, {0}}},
     {0}};
 
 static int ble_gap_event(struct ble_gap_event *event, void *arg)
@@ -68,6 +90,7 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
         {
             ble_app_advertise();
         }
+        conn_hdl = event->connect.conn_handle;
         break;
     case BLE_GAP_EVENT_DISCONNECT:
         ESP_LOGI("GAP", "BLE_GAP_EVENT_DISCONNECT");
@@ -79,6 +102,11 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
         break;
     case BLE_GAP_EVENT_SUBSCRIBE:
         ESP_LOGI("GAP", "BLE_GAP_EVENT_SUBSCRIBE");
+        //if (event->subscribe.attr_handle == battery_char_attr_hdl)
+        //{
+            ESP_LOGI("BLE", "Starting timer");
+            xTimerStart(btHandler, 0);
+        //}
         break;
     default:
         break;
@@ -118,20 +146,11 @@ void ble_app_on_sync(void)
 void host_task(void *param)
 {
     nimble_port_run();
-}*/
-
-
-struct colors {
-    uint8_t green;
-    uint8_t red;
-    uint8_t blue;
-    uint8_t other;
-};
-
+}
 
 void app_main(void)
 {
-    /*
+
     esp_err_t ret;
 
     nvs_flash_init();
@@ -159,16 +178,8 @@ void app_main(void)
 
     ble_hs_cfg.sync_cb = ble_app_on_sync;
     nimble_port_freertos_init(host_task);
-    */
 
-    /*struct colors test = {
-        .green = 0x00,
-        .red = 0x00,
-        .blue = 0xff,
-        .other = 0xff
-    };
-
-    espShow(18, &test, 4, true);*/
+    btHandler = xTimerCreate("update_battery_status", pdMS_TO_TICKS(1000), pdTRUE, NULL, update_bt);
 
     setStatus(LED_AWAITING_CONNECTION);
     vTaskDelay(5000 / portTICK_PERIOD_MS);
