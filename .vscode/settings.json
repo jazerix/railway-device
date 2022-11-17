@@ -24,6 +24,12 @@
         "ble_hs.h": "c",
         "neopixel.h": "c",
         "ble_svc_gap.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "time.h": "c",
+        "esp_log.h": "c",
+        "nvs_flash.h": "c",
+        "state.h": "c",
+        "freertos.h": "c",
+        "currentstate.h": "c"
     }
 }

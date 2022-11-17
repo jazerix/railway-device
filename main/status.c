@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "state.h"
 
 #define LED_PIN 18
 
@@ -38,6 +39,12 @@ const struct colors GREEN = {
     .blue = 0x00,
     .other = 0xff};
 
+const struct colors PURPLE = {
+    .green = 0x00,
+    .red = 0xff,
+    .blue = 0xff,
+    .other = 0xff};
+
 const int LED_AWAITING_CONNECTION = 1;
 const int LED_IDLE = 2;
 const int LED_RECORDING = 3;
@@ -47,9 +54,10 @@ TaskHandle_t xBlueLedHandler = NULL;
 void blueBlinking(void *params)
 {
     bool isOn = true;
+    struct colors *colorToUse = recording ? &PURPLE : &BLUE; 
     while (true)
     {
-        espShow(LED_PIN, isOn ? &BLUE : &OFF, 4, 1);
+        espShow(LED_PIN, isOn ? colorToUse : &OFF, 4, 1);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         isOn = !isOn;
     }
