@@ -5,12 +5,12 @@
 #include "sdmmc_cmd.h"
 #include "esp_vfs_fat.h"
 #include <string.h>
+#include "state.h"
 
-
-#define PIN_NUM_MISO  18
-#define PIN_NUM_MOSI  19
-#define PIN_NUM_CLK   21
-#define PIN_NUM_CS    23
+#define PIN_NUM_MISO  26 
+#define PIN_NUM_MOSI  27
+#define PIN_NUM_CLK   25
+#define PIN_NUM_CS    33 
 #define MOUNT_POINT "/sdcard"
 
 void initSd()
@@ -36,7 +36,7 @@ void initSd()
         .sclk_io_num = PIN_NUM_CLK,
         .quadhd_io_num = -1,
         .quadwp_io_num = -1,
-        .max_transfer_sz = 4000
+        .max_transfer_sz = 4000,
     };
 
      ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
@@ -62,12 +62,13 @@ void initSd()
             ESP_LOGE("SDCARD", "Failed to initialize the card (%s). "
                      "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
+        exitWithError();
         return;
     }
     ESP_LOGI("SDCARD", "Filesystem Mounted");
     sdmmc_card_print_info(stdout, card);
 
-    const char *file_hello = MOUNT_POINT"/hello.txt";
+    const char *file_hello = MOUNT_POINT"/hello2.txt";
 
     ESP_LOGI("SDCARD", "Reading file %s", file_hello);
     FILE *fr = fopen(file_hello, "r");
@@ -87,15 +88,15 @@ void initSd()
 
     write:
 
-    /*/ESP_LOGI("SDCARD", "Opening file for writing: %s", file_hello);
+    ESP_LOGI("SDCARD", "Opening file for writing: %s", file_hello);
     FILE *f = fopen(file_hello, "w");
     if (f == NULL) {
         ESP_LOGE("SDCARD", "Failed to open file for writing");
         return;
     }
-    fprintf(f, "Hello %s!\n", card->cid.name);
+    fprintf(f, "Hello %s!\n", "Niels");
     fclose(f);
-    ESP_LOGI("SDCARD", "File written");*/
+    ESP_LOGI("SDCARD", "File written");
 
     // All done, unmount partition and disable SPI peripheral
     esp_vfs_fat_sdcard_unmount(mount_point, card);

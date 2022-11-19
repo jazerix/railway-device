@@ -7,4 +7,5 @@ extern int passed_time;
 void setConnected(bool isConnected);
 void startRecording();
 void stopRecording();
+void exitWithError();
 #endif

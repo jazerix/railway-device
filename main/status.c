@@ -5,7 +5,7 @@
 #include "freertos/task.h"
 #include "state.h"
 
-#define LED_PIN 18
+#define LED_PIN 15
 
 struct colors
 {
@@ -45,16 +45,24 @@ const struct colors PURPLE = {
     .blue = 0xff,
     .other = 0xff};
 
+const struct colors ERROR = {
+    .green = 0xa5,
+    .red = 0xff,
+    .blue = 0x00,
+    .other = 0xff};
+
 const int LED_AWAITING_CONNECTION = 1;
 const int LED_IDLE = 2;
 const int LED_RECORDING = 3;
+const int LED_ERROR = 4;
 
 TaskHandle_t xBlueLedHandler = NULL;
+TaskHandle_t xErrorLedHandler = NULL;
 
 void blueBlinking(void *params)
 {
     bool isOn = true;
-    struct colors *colorToUse = recording ? &PURPLE : &BLUE; 
+    struct colors *colorToUse = recording ? &PURPLE : &BLUE;
     while (true)
     {
         espShow(LED_PIN, isOn ? colorToUse : &OFF, 4, 1);
@@ -65,13 +73,32 @@ void blueBlinking(void *params)
     xBlueLedHandler = NULL;
 }
 
+void errorBlinking(void *params)
+{
+    bool isOn = true;
+    while (true)
+    {
+        espShow(LED_PIN, isOn ? &ERROR : &OFF, 4, 1);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
+        isOn = !isOn;
+    }
+    vTaskDelete(NULL);
+    xBlueLedHandler = NULL;
+}
+
+
 void setStatus(int state)
 {
     if (xBlueLedHandler != NULL)
     {
         vTaskDelete(xBlueLedHandler);
         xBlueLedHandler = NULL;
-    } 
+    }
+    if (xErrorLedHandler != NULL)
+    {
+        vTaskDelete(xErrorLedHandler);
+        xErrorLedHandler = NULL;
+    }
 
     if (state == LED_AWAITING_CONNECTION)
     {
@@ -88,6 +115,11 @@ void setStatus(int state)
     if (state == LED_RECORDING)
     {
         espShow(LED_PIN, &RED, 4, 1);
+        return;
+    }
+
+    if (state == LED_ERROR) {
+        xTaskCreate(errorBlinking, "error_occured", 2000, NULL, 2, &xErrorLedHandler);
         return;
     }
 }

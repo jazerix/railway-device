@@ -30,3 +30,9 @@ void stopRecording()
     setStatus(LED_IDLE);
     recording = false;
 }
+
+void exitWithError()
+{
+    recording = false;
+    setStatus(LED_ERROR);
+}
