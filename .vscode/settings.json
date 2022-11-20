@@ -30,6 +30,12 @@
         "nvs_flash.h": "c",
         "state.h": "c",
         "freertos.h": "c",
-        "currentstate.h": "c"
+        "currentstate.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "vector": "c",
+        "i2c.h": "c",
+        "stdint.h": "c"
     }
 }
