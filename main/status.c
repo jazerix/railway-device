@@ -55,9 +55,11 @@ const int LED_AWAITING_CONNECTION = 1;
 const int LED_IDLE = 2;
 const int LED_RECORDING = 3;
 const int LED_ERROR = 4;
+const int LED_CALIBRATING = 5;
 
 TaskHandle_t xBlueLedHandler = NULL;
 TaskHandle_t xErrorLedHandler = NULL;
+TaskHandle_t xCalibratingHandler = NULL;
 
 void blueBlinking(void *params)
 {
@@ -83,7 +85,20 @@ void errorBlinking(void *params)
         isOn = !isOn;
     }
     vTaskDelete(NULL);
-    xBlueLedHandler = NULL;
+    xErrorLedHandler = NULL;
+}
+
+void calibratingBlinking()
+{
+    bool isOn = true;
+    while (true)
+    {
+        espShow(LED_PIN, isOn ? &ERROR : &GREEN, 4, 1); // switches rapidly between green and yellow
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        isOn = !isOn;
+    }
+    vTaskDelete(NULL);
+    xCalibratingHandler = NULL;
 }
 
 
@@ -98,6 +113,11 @@ void setStatus(int state)
     {
         vTaskDelete(xErrorLedHandler);
         xErrorLedHandler = NULL;
+    }
+    if (xCalibratingHandler != NULL)
+    {
+        vTaskDelete(xCalibratingHandler);
+        xCalibratingHandler = NULL;
     }
 
     if (state == LED_AWAITING_CONNECTION)
@@ -120,6 +140,12 @@ void setStatus(int state)
 
     if (state == LED_ERROR) {
         xTaskCreate(errorBlinking, "error_occured", 2000, NULL, 2, &xErrorLedHandler);
+        return;
+    }
+
+    if (state == LED_CALIBRATING)
+    {
+        xTaskCreate(calibratingBlinking, "error_occured", 2000, NULL, 2, &xCalibratingHandler);
         return;
     }
 }

@@ -6,6 +6,7 @@
 #include "esp_vfs_fat.h"
 #include <string.h>
 #include "state.h"
+#include "accelerometer/measurement.h"
 
 #define PIN_NUM_MISO  26 
 #define PIN_NUM_MOSI  27
@@ -104,4 +105,19 @@ void initSd()
 
     //deinitialize the bus after all devices are removed
     spi_bus_free(host.slot);
+}
+
+void createFile(int recordingId)
+{
+    
+}
+
+void closeCurrentFile()
+{
+
+}
+
+void appendRow(struct AccData sensorData)
+{
+
 }
