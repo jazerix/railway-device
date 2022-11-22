@@ -12,5 +12,6 @@ void startMeasureMode();
 void getQueueStatus(uint8_t *queue);
 void getDataFormat(uint8_t *dataFormat);
 void initializeDataFormat();
-struct AccData* getCurrentData();
+void enableWatermarkInterrupt();
+void getInterruptStatus(uint8_t *status);
 #endif

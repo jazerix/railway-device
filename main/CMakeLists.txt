@@ -1,2 +1,2 @@
-idf_component_register(SRCS "main.c" "sdcard.c" "neopixel.c" "status.c" "state.c" "bt/connection.c" "bt/characteristics/time.c" "bt/characteristics/currentstate.c" "accelerometer/accelerometer.c" 
+idf_component_register(SRCS "main.c" "sdcard.c" "neopixel.c" "status.c" "state.c" "bt/connection.c" "bt/characteristics/time.c" "bt/characteristics/currentstate.c" "accelerometer/accelerometer.c" "accelerometer/dataRate.c" "accelerometer/communication.c" "accelerometer/datarate.c" "accelerometer/calibration.c" "accelerometer/measurement.c"
                     INCLUDE_DIRS ".")

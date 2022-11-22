@@ -36,6 +36,11 @@
         "string_view": "c",
         "vector": "c",
         "i2c.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "connection.h": "c",
+        "queue": "c",
+        "measurement.h": "c",
+        "task.h": "c",
+        "calibration.h": "c"
     }
 }

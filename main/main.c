@@ -9,10 +9,10 @@
 void app_main(void)
 {
     initAccelerometer();
-    initializeBluetooth();
-    setStatus(LED_AWAITING_CONNECTION);
-    initSd();
+    //initializeBluetooth();
+    //setStatus(LED_AWAITING_CONNECTION);
+    //initSd();
 }
 
 // 1400 / 67 = 20 timer
-// 3000 / 67 = 45 timer
+// 3000 / 67 = 45
