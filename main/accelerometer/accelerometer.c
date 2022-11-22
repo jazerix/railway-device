@@ -31,8 +31,6 @@ void readSensorData()
     while(1)
     {
         struct AccDataDecimal data = getCurrentDataAsDecimal();
-        printMeasurement(data);
-        
     }
     vTaskDelete(NULL);
 }
@@ -55,57 +53,6 @@ void initAccelerometer()
     writeToRegister(QUEUE_CTRL_REGISTER, 1, &queueConfig);
     startMeasureMode();
     xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
-
-    
-
-    /*vTaskDelay(1000 / portTICK_PERIOD_MS);
-    ESP_LOGI(TAG, "INTR PIN STATUS: %d", gpio_get_level(INTR_PIN));
-    getQueueStatus(&queueStatus);
-    ESP_LOGI(TAG, "Current queue status: %x", queueStatus);*/
-    // xTaskCreatePinnedToCore(getCurrentData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
-
-    /*uint8_t dataFormat = 0;
-    getDataFormat(&dataFormat);
-    ESP_LOGI(TAG, "Current data format: %x", dataFormat);
-
-    uint8_t deviceId[1];
-
-    getDeviceId(&deviceId);
-    ESP_LOGI(TAG, "Reading device id: %x", deviceId[0]);
-
-    uint8_t powerConfig = 0;
-    getPowerControl(&powerConfig);
-    ESP_LOGI(TAG, "Power: %x", powerConfig);
-
-
-    getQueueStatus(&queueStatus);
-    ESP_LOGI(TAG, "Current queue status: %x", queueStatus);
-
-
-
-    getPowerControl(&powerConfig);
-    ESP_LOGI(TAG, "Power: %x", powerConfig);
-
-    */
-
-    /*
-     startMeasureMode();
-
-     uint8_t queueStatus = 0;
-     getQueueStatus(&queueStatus);
-     ESP_LOGI(TAG, "Current queue status: %x", queueStatus);
-
-     vTaskDelay(10 / portTICK_PERIOD_MS);
-
-     getQueueStatus(&queueStatus);
-     ESP_LOGI(TAG, "Current queue status: %x", queueStatus);
-
-     // uint8_t data[6];
-     // while(1)
-     xTaskCreatePinnedToCore(getCurrentData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
-
-     getQueueStatus(&queueStatus);
-     ESP_LOGI(TAG, "Current queue status: %x", queueStatus);*/
 }
 
 void configureAccelerometer()
