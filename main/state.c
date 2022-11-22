@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include "stdbool.h"
-#include "esp_random.h"
 #include "status.h"
+#include "storage.h"
+#include "accelerometer/offset.h"
+#include "esp_log.h"
 
-static char* recordingId;
+#define TAG "State"
+
 static int batteryLevel = 100;
 static int samples = 0;
 static bool connected = false;
 
 extern bool recording = false;
-extern int passed_time = 0;
+extern uint32_t recordingId = 0;
+extern struct OffsetData *offsets = NULL;
 
 void setConnected(bool isConnected)
 {
@@ -18,11 +22,19 @@ void setConnected(bool isConnected)
 
 void startRecording()
 {
-    if (connected == false)
+    if (offsets == NULL)
+    {
+        ESP_LOGI(TAG, "Recoding can't be started as device isn't calibrated");
         return;
+    }
+    if (connected == false)
+    {
+        ESP_LOGI(TAG, "No connection has been made to the device, recording can't be started");
+        return;
+    }
+
     setStatus(LED_RECORDING);
     recording = true;
-    //recording = "test";
 }
 
 void stopRecording()
@@ -33,6 +45,6 @@ void stopRecording()
 
 void exitWithError()
 {
-    recording = false;
+    stopRecording();
     setStatus(LED_ERROR);
 }

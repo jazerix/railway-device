@@ -7,7 +7,7 @@ int bt_time_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_
 {
     /*if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR)
     {*/
-    os_mbuf_append(ctxt->om, &passed_time, sizeof(passed_time));
+    os_mbuf_append(ctxt->om, 0, sizeof(int)); // fix
     ESP_LOGI("BT CHAR", "read time");
     /*}
     else

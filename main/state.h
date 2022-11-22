@@ -2,7 +2,8 @@
 #define _GLOBALSTATE_
 
 extern bool recording;
-extern int passed_time;
+extern uint32_t recordingId;
+extern struct OffsetData offsets;
 
 void setConnected(bool isConnected);
 void startRecording();
