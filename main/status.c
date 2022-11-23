@@ -64,7 +64,7 @@ TaskHandle_t xCalibratingHandler = NULL;
 void blueBlinking(void *params)
 {
     bool isOn = true;
-    struct colors *colorToUse = recording ? &PURPLE : &BLUE;
+    struct colors *colorToUse = state == STATE_RECORDING ? &PURPLE : &BLUE;
     while (true)
     {
         espShow(LED_PIN, isOn ? colorToUse : &OFF, 4, 1);

@@ -4,14 +4,16 @@
 #include "storage.h"
 #include "accelerometer/offset.h"
 #include "esp_log.h"
+#include "state.h"
 
 #define TAG "State"
 
 static int batteryLevel = 100;
 static int samples = 0;
 static bool connected = false;
+static bool ready = false;
 
-extern bool recording = false;
+extern uint8_t state = 0;
 extern uint32_t recordingId = 0;
 extern struct OffsetData *offsets = NULL;
 
@@ -34,13 +36,15 @@ void startRecording()
     }
 
     setStatus(LED_RECORDING);
-    recording = true;
+    recordingId = getRecordCouter();
+    state = STATE_RECORDING;
 }
 
 void stopRecording()
 {
     setStatus(LED_IDLE);
-    recording = false;
+    recordingId = 0;
+    state = STATE_READY;
 }
 
 void exitWithError()

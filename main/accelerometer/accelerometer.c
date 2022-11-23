@@ -11,10 +11,10 @@
 #include "measurement.h"
 #include "dataRate.h"
 #include "calibration.h"
+#include "queue.h"
 
 #define DATA_FORMAT_REGISTER 0x31
-#define QUEUE_CTRL_REGISTER 0x38
-#define QUEUE_REGISTER 0x39
+
 
 #define SDA_GPIO 18
 #define SCL_GPIO 19
@@ -41,16 +41,13 @@ void initAccelerometer()
     ESP_LOGI(TAG, "Initializing");
     configureAccelerometer();
     initializeDataFormat();
-
-    uint8_t queueConfig = 0b00000000; // fifo disabled// 0b01011111;
-    writeToRegister(QUEUE_CTRL_REGISTER, 1, &queueConfig);
     setDataRate(DATA_RATE_800_HZ);
     printDataRate();
+}
 
-    startCalibration();
-
-    queueConfig = 0b01011111;
-    writeToRegister(QUEUE_CTRL_REGISTER, 1, &queueConfig);
+void startMeasurement()
+{
+    setQueueMode(QUEUE_FIFO);
     startMeasureMode();
     xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
 }
@@ -76,12 +73,6 @@ void getDeviceId(uint8_t *deviceId)
     readFromRegister(0x00, 1, deviceId);
 }
 
-
-
-void getQueueStatus(uint8_t *queue)
-{
-    readFromRegister(QUEUE_REGISTER, 1, queue);
-}
 
 void getDataFormat(uint8_t *dataFormat)
 {

@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 #include "measurement.h"
 #include "esp_log.h"
+#include "queue.h"
 
 #define TAG "Accelerometer Calibration"
 #define TARGET_SAMPLES 500
@@ -60,12 +61,13 @@ void startCalibration()
 {
     ESP_LOGI(TAG, "Calibrating sensor");
     resetOffset();
+    disableQueue();
     startMeasureMode();
     struct AccData data = average(TARGET_SAMPLES, true);
 
     int8_t offsetX = data.x;
     int8_t offsetY = data.y;
-    int8_t offsetZ = data.z - 256;
+    int8_t offsetZ = data.z - 256; // default is 1g for the Z axis to account for gravity
 
     ESP_LOGI(TAG, "Offset: X%d, Y%d, Z%d", offsetX, offsetY, offsetZ);
     setOffsetRegister(OFFSET_X_REGISTER, offsetX);
@@ -73,9 +75,4 @@ void startCalibration()
     setOffsetRegister(OFFSET_Z_REGISTER, offsetZ);
     stopMeasureMode();
     ESP_LOGI(TAG, "Sensor calibrated");
-}
-
-
-void calibrationCounter()
-{
 }

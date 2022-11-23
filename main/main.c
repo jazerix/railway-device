@@ -7,7 +7,7 @@
 
 void app_main(void)
 {
-    //initAccelerometer();
+    initAccelerometer();
     initializeBluetooth();
     setStatus(LED_AWAITING_CONNECTION);
     initSd();

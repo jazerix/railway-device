@@ -42,6 +42,8 @@
         "measurement.h": "c",
         "task.h": "c",
         "calibration.h": "c",
-        "storage.h": "c"
+        "storage.h": "c",
+        "accelerometer.h": "c",
+        "queue.h": "c"
     }
 }
