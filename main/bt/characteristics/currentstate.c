@@ -8,7 +8,7 @@ int bt_state_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt
     if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR)
     {
         os_mbuf_append(ctxt->om, &state, sizeof(state));
-        ESP_LOGI("BT CHAR", "read state");
+        ESP_LOGI("BT Characteristics", "Read state");
     }
     else if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
     {
@@ -22,7 +22,7 @@ int bt_state_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt
         {
             stopRecording();
         }
-        ESP_LOGI("BT CHAR", "write state");
+        ESP_LOGI("BT Characteristics", "Set state");
     }
     return 0;
 }

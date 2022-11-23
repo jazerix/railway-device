@@ -44,6 +44,9 @@
         "calibration.h": "c",
         "storage.h": "c",
         "accelerometer.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "offset.h": "c",
+        "calibrate.h": "c",
+        "recordingid.h": "c"
     }
 }

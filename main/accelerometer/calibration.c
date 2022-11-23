@@ -5,6 +5,9 @@
 #include "measurement.h"
 #include "esp_log.h"
 #include "queue.h"
+#include "../state.h"
+#include "offset.h"
+#include "../status.h"
 
 #define TAG "Accelerometer Calibration"
 #define TARGET_SAMPLES 500
@@ -60,6 +63,7 @@ struct AccData average(int samples, bool printResults)
 void startCalibration()
 {
     ESP_LOGI(TAG, "Calibrating sensor");
+    setStatus(LED_CALIBRATING);
     resetOffset();
     disableQueue();
     startMeasureMode();
@@ -74,5 +78,12 @@ void startCalibration()
     setOffsetRegister(OFFSET_Y_REGISTER, offsetY);
     setOffsetRegister(OFFSET_Z_REGISTER, offsetZ);
     stopMeasureMode();
+
+    struct OffsetData tempOffsets = {
+        .x = offsetX,
+        .y = offsetY,
+        .z = offsetX
+    };
+    offsets = tempOffsets;
     ESP_LOGI(TAG, "Sensor calibrated");
 }

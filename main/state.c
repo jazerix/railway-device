@@ -3,6 +3,7 @@
 #include "status.h"
 #include "storage.h"
 #include "accelerometer/offset.h"
+#include "accelerometer/calibration.h"
 #include "esp_log.h"
 #include "state.h"
 
@@ -13,18 +14,35 @@ static int samples = 0;
 static bool connected = false;
 static bool ready = false;
 
-extern uint8_t state = 0;
+extern uint8_t state = STATE_NOT_CALIBRATED;
 extern uint32_t recordingId = 0;
-extern struct OffsetData *offsets = NULL;
+extern struct OffsetData offsets = {
+    .x = 0,
+    .y = 0,
+    .z = 0
+};
 
 void setConnected(bool isConnected)
 {
     connected = isConnected;
 }
 
+void calibrateSensor()
+{
+    setStatus(LED_CALIBRATING);
+    startCalibration();
+    setStatus(LED_IDLE);
+    if (offsets.x == 0xff || offsets.y == 0xff || offsets.z == 0xff)
+    {
+        ESP_LOGE(TAG, "Calibration failed - please reseat device.");
+        return;
+    }
+    state = STATE_READY;
+}
+
 void startRecording()
 {
-    if (offsets == NULL)
+    if (state == STATE_NOT_CALIBRATED)
     {
         ESP_LOGI(TAG, "Recoding can't be started as device isn't calibrated");
         return;

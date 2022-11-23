@@ -1,8 +1,8 @@
 #ifndef _ACCELEROMETER_OFFSET_
 #define _ACCELEROMETER_OFFSET_
 struct OffsetData {
-    double x;
-    double y;
-    double z;   
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;   
 };
 #endif
