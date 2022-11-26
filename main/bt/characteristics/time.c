@@ -7,8 +7,9 @@
 int bt_time_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     int64_t currentTime = esp_timer_get_time();
-    os_mbuf_append(ctxt->om, &currentTime, sizeof(currentTime));
+    int smallerCurrentTime = (unsigned int)((currentTime - startTime)  / 1000);
+    os_mbuf_append(ctxt->om, &smallerCurrentTime, sizeof(smallerCurrentTime));
     ESP_LOGI("BT Characteristics", "Read time");
-    
+
     return 0;
 }

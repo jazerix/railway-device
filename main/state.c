@@ -2,10 +2,12 @@
 #include "stdbool.h"
 #include "status.h"
 #include "storage.h"
+#include "accelerometer/accelerometer.h"
 #include "accelerometer/offset.h"
 #include "accelerometer/calibration.h"
 #include "esp_log.h"
 #include "state.h"
+#include "esp_timer.h"
 
 #define TAG "State"
 
@@ -16,6 +18,7 @@ static bool ready = false;
 
 extern uint8_t state = STATE_NOT_CALIBRATED;
 extern uint32_t recordingId = 0;
+extern int64_t startTime = 0;
 extern struct OffsetData offsets = {
     .x = 0,
     .y = 0,
@@ -55,6 +58,8 @@ void startRecording()
 
     setStatus(LED_RECORDING);
     recordingId = getRecordCouter();
+    startTime = esp_timer_get_time();
+    startMeasurement();
     state = STATE_RECORDING;
 }
 

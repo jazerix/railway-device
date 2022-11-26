@@ -8,6 +8,7 @@
 extern uint8_t state;
 extern uint32_t recordingId;
 extern struct OffsetData offsets;
+extern int64_t startTime;
 
 void setConnected(bool isConnected);
 void startRecording();

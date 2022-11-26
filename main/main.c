@@ -4,14 +4,11 @@
 #include "sdcard.h"
 #include "accelerometer/accelerometer.c"
 
-
-
-
+#include <inttypes.h>
 void app_main(void)
 {
+    initAccelerometer(); 
     initializeBluetooth();
-    /**initAccelerometer();
-    
     setStatus(LED_AWAITING_CONNECTION);
-    initSd();*/
+    initSd();
 }

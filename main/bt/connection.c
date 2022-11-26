@@ -26,12 +26,6 @@ void ble_app_advertise(void);
 #define MANUFACTURER_NAME 0x2A29
 
 
-/**static int device_write(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
-{
-    printf("incoming message: %.*s\n", ctxt->om->om_len, ctxt->om->om_data);
-    return 0;
-}*/
-
 static int device_info(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
     os_mbuf_append(ctxt->om, "Niels Faurskov", strlen("Niels Faurskov"));

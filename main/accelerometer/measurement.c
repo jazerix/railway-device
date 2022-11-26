@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "measurement.h"
 #include "esp_timer.h";
+#include "../state.h"
 
 #define TAG "Accelerometer"
 #define PWR_CTRL_REGISTER 0x2d
@@ -40,7 +41,7 @@ struct AccData getCurrentData()
     accData.x = dataX;
     accData.y = dataY;
     accData.z = dataZ;
-    accData.time = esp_timer_get_time();
+    accData.time = (unsigned int)((esp_timer_get_time() - startTime) / 1000);
 
     return accData;
 }

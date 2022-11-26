@@ -50,6 +50,7 @@
         "recordingid.h": "c",
         "__config": "c",
         "sstream": "c",
-        "adc.h": "c"
+        "adc.h": "c",
+        "esp_timer.h": "c"
     }
 }

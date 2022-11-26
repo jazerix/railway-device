@@ -12,9 +12,9 @@
 #include "dataRate.h"
 #include "calibration.h"
 #include "queue.h"
+#include "communication.h"
 
 #define DATA_FORMAT_REGISTER 0x31
-
 
 #define SDA_GPIO 18
 #define SCL_GPIO 19
@@ -26,11 +26,22 @@ TaskHandle_t xAccelerometerHandler = NULL;
 uint32_t entries = 0;
 
 
+void monitor_queue()
+{
+    while(1)
+    {
+        uint8_t queue = 0;
+        getQueueStatus(&queue);
+        ESP_LOGI(TAG,"Queue: %d", queue);
+    }
+    vTaskDelete(NULL);
+}
+
 void readSensorData()
 {
     while(1)
     {
-        struct AccDataDecimal data = getCurrentDataAsDecimal();
+        struct AccData data = getCurrentData();
     }
     vTaskDelete(NULL);
 }
@@ -50,6 +61,8 @@ void startMeasurement()
     setQueueMode(QUEUE_FIFO);
     startMeasureMode();
     xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
+    
+    xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
 }
 
 void configureAccelerometer()

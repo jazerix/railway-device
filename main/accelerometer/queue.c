@@ -2,6 +2,7 @@
 #include "accelerometer.h"
 #include "queue.h"
 #include "esp_log.h"
+#include "communication.h"
 
 #define TAG "Accelerometer"
 #define QUEUE_SIZE 32
