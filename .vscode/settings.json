@@ -47,6 +47,9 @@
         "queue.h": "c",
         "offset.h": "c",
         "calibrate.h": "c",
-        "recordingid.h": "c"
+        "recordingid.h": "c",
+        "__config": "c",
+        "sstream": "c",
+        "adc.h": "c"
     }
 }

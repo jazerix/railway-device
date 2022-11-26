@@ -5,10 +5,13 @@
 #include "accelerometer/accelerometer.c"
 
 
+
+
 void app_main(void)
 {
-    initAccelerometer();
     initializeBluetooth();
+    /**initAccelerometer();
+    
     setStatus(LED_AWAITING_CONNECTION);
-    initSd();
+    initSd();*/
 }

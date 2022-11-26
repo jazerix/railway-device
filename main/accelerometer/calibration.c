@@ -79,11 +79,8 @@ void startCalibration()
     setOffsetRegister(OFFSET_Z_REGISTER, offsetZ);
     stopMeasureMode();
 
-    struct OffsetData tempOffsets = {
-        .x = offsetX,
-        .y = offsetY,
-        .z = offsetX
-    };
-    offsets = tempOffsets;
+    offsets.x = offsetX;
+    offsets.y = offsetY;
+    offsets.z = offsetZ;
     ESP_LOGI(TAG, "Sensor calibrated");
 }

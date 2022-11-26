@@ -145,7 +145,7 @@ void setStatus(int state)
 
     if (state == LED_CALIBRATING)
     {
-        xTaskCreate(calibratingBlinking, "error_occured", 2000, NULL, 2, &xCalibratingHandler);
+        xTaskCreate(calibratingBlinking, "calibration_led", 2000, NULL, 2, &xCalibratingHandler);
         return;
     }
 }
