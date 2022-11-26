@@ -63,7 +63,6 @@ struct AccData average(int samples, bool printResults)
 void startCalibration()
 {
     ESP_LOGI(TAG, "Calibrating sensor");
-    setStatus(LED_CALIBRATING);
     resetOffset();
     disableQueue();
     startMeasureMode();

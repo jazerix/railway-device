@@ -7,6 +7,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "driver/gpio.h"
+#include "stdbool.h"
 
 #include "measurement.h"
 #include "dataRate.h"
@@ -25,29 +26,35 @@ i2c_config_t i2c_config;
 TaskHandle_t xAccelerometerHandler = NULL;
 
 uint32_t entries = 0;
-
+bool shouldStop = false;
 
 void monitor_queue()
 {
-    while(1)
+    while (true)
     {
         uint8_t queue = 0;
         getQueueStatus(&queue);
-        ESP_LOGI(TAG,"Queue: %d", queue);
+        ESP_LOGI(TAG, "Queue: %d", queue);
     }
     vTaskDelete(NULL);
 }
 
 void readSensorData()
 {
-    while(1)
+    while (true)
     {
+        if (shouldStop == true)
+            break;
         struct AccData data = getCurrentData();
         saveValueToBuffer(data);
+        /* ESP_LOGI(TAG, "Measurement: X%dY%dZ%d Time: %d", data.x, data.y, data.z, data.time);
+        deinitWriteBuffer();
+        break;*/
     }
+    xAccelerometerHandler = NULL;
+    shouldStop = false;
     vTaskDelete(NULL);
 }
-
 
 void initAccelerometer()
 {
@@ -62,9 +69,21 @@ void startMeasurement()
 {
     setQueueMode(QUEUE_FIFO);
     startMeasureMode();
+    shouldStop = false;
     xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
-    
-    //xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
+
+    // xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
+}
+
+void stopMeasurement()
+{
+    shouldStop = true;
+    while(xAccelerometerHandler != NULL)
+    {
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+        ESP_LOGI(TAG, "%p", &xAccelerometerHandler);
+    }
+    stopMeasureMode();
 }
 
 void configureAccelerometer()
@@ -87,7 +106,6 @@ void getDeviceId(uint8_t *deviceId)
 {
     readFromRegister(0x00, 1, deviceId);
 }
-
 
 void getDataFormat(uint8_t *dataFormat)
 {

@@ -59,7 +59,6 @@ int bt_battery_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_ga
     }
 
     int adcRaw = adc1_get_raw(ADC1_CHANNEL_7);
-    printf("battery %d \n", adcRaw);
     uint32_t voltage = esp_adc_cal_raw_to_voltage(adcRaw, &adc1_chars);
     bool charging = gpio_get_level(BATT_EXTERN_PWER_SOURCE);
     struct BatteryState batteryState = {

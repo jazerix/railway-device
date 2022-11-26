@@ -5,9 +5,10 @@
 #include "accelerometer/accelerometer.c"
 
 #include <inttypes.h>
+#include "accelerometer/measurement.h"
 void app_main(void)
 {
-    initAccelerometer(); 
+    initAccelerometer();
     initializeBluetooth();
     setStatus(LED_AWAITING_CONNECTION);
     initSd();

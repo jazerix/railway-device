@@ -9,10 +9,10 @@
 #include "state.h"
 #include "esp_timer.h"
 #include "writeBuffer.h"
+#include "sdcard.h"
 
 #define TAG "State"
 
-static int samples = 0;
 static bool connected = false;
 
 extern uint8_t state = STATE_NOT_CALIBRATED;
@@ -55,16 +55,20 @@ void startRecording()
         return;
     }
 
-    setStatus(LED_RECORDING);
     recordingId = getRecordCouter();
     startTime = esp_timer_get_time();
-    initWriteQueue();
+    initWriteBuffer();
+    createFile(recordingId);
+    setStatus(LED_RECORDING);
     startMeasurement();
     state = STATE_RECORDING;
 }
 
 void stopRecording()
 {
+    stopMeasurement();
+    deinitWriteBuffer();
+    closeCurrentFile();
     setStatus(LED_IDLE);
     recordingId = 0;
     state = STATE_READY;

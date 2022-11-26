@@ -51,6 +51,11 @@
         "__config": "c",
         "sstream": "c",
         "adc.h": "c",
-        "esp_timer.h": "c"
+        "esp_timer.h": "c",
+        "sdcard.h": "c",
+        "communication.h": "c",
+        "datarate.h": "c",
+        "writebuffer.h": "c",
+        "freertosconfig.h": "c"
     }
 }

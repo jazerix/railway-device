@@ -4,6 +4,7 @@
 
 void initAccelerometer();
 void startMeasurement();
+void stopMeasurement();
 void initializeDataFormat();
 void configureAccelerometer();
 #endif
