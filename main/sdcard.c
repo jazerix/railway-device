@@ -117,7 +117,7 @@ void closeCurrentFile()
 
 }
 
-void appendRow(struct AccData sensorData)
+void writeSensorData(struct AccData sensorData)
 {
 
 }

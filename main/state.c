@@ -8,13 +8,12 @@
 #include "esp_log.h"
 #include "state.h"
 #include "esp_timer.h"
+#include "writeBuffer.h"
 
 #define TAG "State"
 
-static int batteryLevel = 100;
 static int samples = 0;
 static bool connected = false;
-static bool ready = false;
 
 extern uint8_t state = STATE_NOT_CALIBRATED;
 extern uint32_t recordingId = 0;
@@ -59,6 +58,7 @@ void startRecording()
     setStatus(LED_RECORDING);
     recordingId = getRecordCouter();
     startTime = esp_timer_get_time();
+    initWriteQueue();
     startMeasurement();
     state = STATE_RECORDING;
 }

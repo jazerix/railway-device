@@ -16,6 +16,8 @@ static esp_adc_cal_characteristics_t adc1_chars;
 
 uint8_t convertVoltageToBatteryLevel(uint32_t voltage)
 {
+    if (voltage < 1600)
+        return 255;
     if (voltage > 2080)
         return 100;
     if (voltage > 2055)
@@ -49,7 +51,7 @@ int bt_battery_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_ga
 {
     if (initialized == false)
     {
-        esp_adc_cal_value_t calibrationvaltype = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_DEFAULT, 0, &adc1_chars);
+        esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_DEFAULT, 0, &adc1_chars);
         ESP_ERROR_CHECK(adc1_config_width(ADC_WIDTH_BIT_DEFAULT));
         ESP_ERROR_CHECK(adc1_config_channel_atten(ADC1_CHANNEL_7, ADC_ATTEN_DB_11));
         gpio_set_direction(BATT_EXTERN_PWER_SOURCE, GPIO_MODE_INPUT);

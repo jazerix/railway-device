@@ -13,6 +13,7 @@
 #include "calibration.h"
 #include "queue.h"
 #include "communication.h"
+#include "../writeBuffer.h"
 
 #define DATA_FORMAT_REGISTER 0x31
 
@@ -42,6 +43,7 @@ void readSensorData()
     while(1)
     {
         struct AccData data = getCurrentData();
+        saveValueToBuffer(data);
     }
     vTaskDelete(NULL);
 }
@@ -62,7 +64,7 @@ void startMeasurement()
     startMeasureMode();
     xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
     
-    xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
+    //xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
 }
 
 void configureAccelerometer()
