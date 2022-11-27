@@ -52,7 +52,7 @@ void saveValueToBuffer(struct AccData data)
     if (index == BUFFER_SIZE) // buffer full
     {
         saveBuffer();
-        ESP_LOGI(TAG, "Buffer full - switching to %d", currentBuffer);
+        //ESP_LOGI(TAG, "Buffer full - switching to %d", currentBuffer);
         index = 0;
         return;
     }
@@ -78,13 +78,23 @@ void padRemaining()
     }
 }
 
+void waitForTaskToFinish()
+{
+    while(savingTask != NULL)
+    {
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
 
 void deinitWriteBuffer()
 {
+    waitForTaskToFinish();
     if (index != 0) {
         padRemaining();
         saveBuffer();
+        waitForTaskToFinish();
     }
+    savingTask = NULL;
     index = 0;
     free(bufferA);
     free(bufferB);

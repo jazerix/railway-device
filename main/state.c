@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "stdbool.h"
+#include <stdbool.h>
 #include "status.h"
 #include "storage.h"
 #include "accelerometer/accelerometer.h"
@@ -32,11 +32,11 @@ void setConnected(bool isConnected)
 void calibrateSensor()
 {
     setStatus(LED_CALIBRATING);
-    startCalibration();
+    bool calibrationSuccess = startCalibration();
     setStatus(LED_IDLE);
-    if (offsets.x == 0xff || offsets.y == 0xff || offsets.z == 0xff)
+    if (!calibrationSuccess)
     {
-        ESP_LOGE(TAG, "Calibration failed - please reseat device.");
+        ESP_LOGW(TAG, "Calibration failed, please reorient device");
         return;
     }
     state = STATE_READY;
@@ -66,6 +66,8 @@ void startRecording()
 
 void stopRecording()
 {
+    if (state != 2)
+        return;
     stopMeasurement();
     deinitWriteBuffer();
     closeCurrentFile();

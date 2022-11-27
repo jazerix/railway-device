@@ -1,13 +1,11 @@
 #include <stdio.h>
-#include "communication.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "measurement.h"
 #include "esp_log.h"
 #include "queue.h"
 #include "../state.h"
 #include "offset.h"
-#include "../status.h"
+#include "stdbool.h"
+#include "communication.h"
 
 #define TAG "Accelerometer Calibration"
 #define TARGET_SAMPLES 500
@@ -60,13 +58,15 @@ struct AccData average(int samples, bool printResults)
 }
 
 
-void startCalibration()
+bool startCalibration()
 {
     ESP_LOGI(TAG, "Calibrating sensor");
     resetOffset();
     disableQueue();
     startMeasureMode();
     struct AccData data = average(TARGET_SAMPLES, true);
+    if (data.x >= 255 || data.y >= 255 || data.z - 256 >= 255)
+        return false;
 
     int8_t offsetX = data.x;
     int8_t offsetY = data.y;
@@ -82,4 +82,6 @@ void startCalibration()
     offsets.y = offsetY;
     offsets.z = offsetZ;
     ESP_LOGI(TAG, "Sensor calibrated");
+
+    return true;
 }
