@@ -26,7 +26,6 @@ void getPowerControl(uint8_t *powerControl)
     readFromRegister(PWR_CTRL_REGISTER, 1, powerControl);
 }
 
-
 struct AccData getCurrentData()
 {
     uint8_t data[6];

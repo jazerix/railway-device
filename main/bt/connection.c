@@ -80,7 +80,7 @@ static int ble_gap_event(struct ble_gap_event *event, void *arg)
     switch (event->type)
     {
     case BLE_GAP_EVENT_CONNECT:
-        setStatus(LED_IDLE);
+        setStatus(state < 2 ? LED_IDLE : LED_RECORDING);
         setConnected(true);
         ESP_LOGI("GAP", "BLE_GAP_EVENT_CONNECT %s", event->connect.status == 0 ? "OK" : "Failed");
         if (event->connect.status != 0)

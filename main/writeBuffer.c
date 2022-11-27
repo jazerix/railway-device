@@ -1,5 +1,5 @@
 #include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "accelerometer/measurement.h"
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -8,6 +8,9 @@
 
 #define TAG "WriteBuffer"
 #define BUFFER_SIZE 1000
+
+xSemaphoreHandle mutexWrite;
+
 
 struct AccData *bufferA;
 struct AccData *bufferB;
@@ -26,6 +29,7 @@ void saveBufferTask(struct AccData *buffer)
 
 void initWriteBuffer()
 {
+    mutexWrite = xSemaphoreCreateMutex();
     bufferA = calloc(BUFFER_SIZE, sizeof(struct AccData));
     bufferB = calloc(BUFFER_SIZE, sizeof(struct AccData));
     /*if (bufferA == NULL)
@@ -49,16 +53,23 @@ void saveBuffer()
 
 void saveValueToBuffer(struct AccData data)
 {
+    if (!xSemaphoreTake(mutexWrite, 1000 / portTICK_PERIOD_MS))
+    {
+        ESP_LOGW(TAG, "Obtaining write lock timed out!");
+        return;
+    }
     if (index == BUFFER_SIZE) // buffer full
     {
         saveBuffer();
         //ESP_LOGI(TAG, "Buffer full - switching to %d", currentBuffer);
         index = 0;
+        xSemaphoreGive(mutexWrite);
         return;
     }
     struct AccData *writeTo = currentBuffer == 0 ? bufferA : bufferB;
     writeTo[index] = data;
     index++;
+    xSemaphoreGive(mutexWrite);
 }
 
 /**

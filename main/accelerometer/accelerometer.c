@@ -5,17 +5,18 @@
 #include "accelerometer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
 #include "driver/gpio.h"
+#include "FreeRTOSConfig.h"
 #include "stdbool.h"
 
+#include "calibration.h"
 #include "measurement.h"
 #include "dataRate.h"
-#include "calibration.h"
 #include "queue.h"
 #include "communication.h"
 #include "../writeBuffer.h"
 
+#define PRINT_SAMPLES false
 #define DATA_FORMAT_REGISTER 0x31
 
 #define SDA_GPIO 18
@@ -24,9 +25,11 @@
 
 i2c_config_t i2c_config;
 TaskHandle_t xAccelerometerHandler = NULL;
+TaskHandle_t xAccelerometerHandlerSecondary = NULL;
 
-uint32_t entries = 0;
-bool shouldStop = false;
+bool shouldStopPrimary = false;
+bool shouldStopSecondary = false;
+int samples = 0;
 
 void monitor_queue()
 {
@@ -39,20 +42,47 @@ void monitor_queue()
     vTaskDelete(NULL);
 }
 
+void samplesPerSec()
+{
+    while(true)
+    {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        ESP_LOGI(TAG, "Samples last second: %d", samples);
+        samples = 0;
+    }
+}
+
 void readSensorData()
+{
+    struct AccData data = getCurrentData();
+    saveValueToBuffer(data);
+    if (PRINT_SAMPLES)
+        samples++;
+}
+
+void readFromPrimary()
 {
     while (true)
     {
-        if (shouldStop == true)
+        if (shouldStopPrimary == true)
             break;
-        struct AccData data = getCurrentData();
-        saveValueToBuffer(data);
-        /* ESP_LOGI(TAG, "Measurement: X%dY%dZ%d Time: %d", data.x, data.y, data.z, data.time);
-        deinitWriteBuffer();
-        break;*/
+        readSensorData();
     }
     xAccelerometerHandler = NULL;
-    shouldStop = false;
+    shouldStopPrimary = false;
+    vTaskDelete(NULL);
+}
+
+void readFromSecondary()
+{
+    while (true)
+    {
+        if (shouldStopSecondary == true)
+            break;
+        readSensorData();
+    }
+    xAccelerometerHandlerSecondary = NULL;
+    shouldStopSecondary = false;
     vTaskDelete(NULL);
 }
 
@@ -61,7 +91,7 @@ void initAccelerometer()
     ESP_LOGI(TAG, "Initializing");
     configureAccelerometer();
     initializeDataFormat();
-    setDataRate(DATA_RATE_800_HZ);
+    setDataRate(DATA_RATE_1600_HZ);
     printDataRate();
 }
 
@@ -69,19 +99,24 @@ void startMeasurement()
 {
     setQueueMode(QUEUE_FIFO);
     startMeasureMode();
-    shouldStop = false;
-    xTaskCreatePinnedToCore(readSensorData, "read_acc", 2000, NULL, 3, &xAccelerometerHandler, 1);
+    shouldStopPrimary = false;
+    shouldStopSecondary = false;
+    xTaskCreatePinnedToCore(readFromPrimary, "read_acc", 2000, NULL, configMAX_PRIORITIES, &xAccelerometerHandler, 1);
+    xTaskCreatePinnedToCore(readFromSecondary, "read_acc_second", 2000, NULL, 2, &xAccelerometerHandlerSecondary, 0);
+    if (PRINT_SAMPLES)
+        xTaskCreate(samplesPerSec, "samples_per_sec", 2000, NULL, 1, NULL);
 
     // xTaskCreate(monitor_queue, "monitor_queue", 2000, NULL, 3, NULL);
 }
 
 void stopMeasurement()
 {
-    shouldStop = true;
-    while(xAccelerometerHandler != NULL)
+    shouldStopPrimary = true;
+    shouldStopSecondary = true;
+    while(xAccelerometerHandler != NULL || xAccelerometerHandlerSecondary != NULL)
     {
         vTaskDelay(10 / portTICK_PERIOD_MS);
-        ESP_LOGI(TAG, "%p", &xAccelerometerHandler);
+        ESP_LOGI(TAG, "Waiting for handlers to stop: %p %p", &xAccelerometerHandler, &xAccelerometerHandlerSecondary);
     }
     stopMeasureMode();
 }
