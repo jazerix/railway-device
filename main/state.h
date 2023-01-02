@@ -7,6 +7,8 @@
 
 extern uint8_t state;
 extern uint32_t recordingId;
+extern uint32_t samplesPrimary;
+extern uint32_t samplesSecondary;
 extern struct OffsetData offsets;
 extern int64_t startTime;
 

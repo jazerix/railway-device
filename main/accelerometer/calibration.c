@@ -65,7 +65,7 @@ bool startCalibration()
     disableQueue();
     startMeasureMode();
     struct AccData data = average(TARGET_SAMPLES, true);
-    if (data.x >= 255 || data.y >= 255 || data.z - 256 >= 255)
+    if (data.x >= 127 || data.y >= 127 || data.z - 256 >= 127) // twos complement allows us to make changes up to 127
         return false;
 
     int8_t offsetX = data.x;

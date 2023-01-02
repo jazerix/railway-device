@@ -5,7 +5,7 @@
 #include "freertos/task.h"
 #include "state.h"
 
-#define LED_PIN 15
+#define LED_PIN 5
 
 struct colors
 {
@@ -28,9 +28,9 @@ const struct colors BLUE = {
     .other = 0xff};
 
 const struct colors RED = {
-    .green = 0x00,
-    .red = 0xff,
-    .blue = 0x00,
+    .green = 0xee,
+    .red = 0xb1,
+    .blue = 0x46,
     .other = 0xff};
 
 const struct colors GREEN = {

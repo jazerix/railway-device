@@ -8,15 +8,14 @@
 #include "driver/gpio.h"
 #include "FreeRTOSConfig.h"
 #include "stdbool.h"
-
-#include "calibration.h"
+#include "../state.h"
 #include "measurement.h"
 #include "dataRate.h"
 #include "queue.h"
 #include "communication.h"
 #include "../writeBuffer.h"
 
-#define PRINT_SAMPLES false
+#define PRINT_SAMPLES true
 #define DATA_FORMAT_REGISTER 0x31
 
 #define SDA_GPIO 18
@@ -42,13 +41,15 @@ void monitor_queue()
     vTaskDelete(NULL);
 }
 
+int counter = 1;
 void samplesPerSec()
 {
     while(true)
     {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-        ESP_LOGI(TAG, "Samples last second: %d", samples);
+        ESP_LOGI(TAG, "[%03d] Samples last second: %d", counter, samples);
         samples = 0;
+        counter++;
     }
 }
 
@@ -67,6 +68,7 @@ void readFromPrimary()
         if (shouldStopPrimary == true)
             break;
         readSensorData();
+        samplesPrimary++;
     }
     xAccelerometerHandler = NULL;
     shouldStopPrimary = false;
@@ -80,6 +82,7 @@ void readFromSecondary()
         if (shouldStopSecondary == true)
             break;
         readSensorData();
+        samplesSecondary++;
     }
     xAccelerometerHandlerSecondary = NULL;
     shouldStopSecondary = false;
@@ -102,7 +105,7 @@ void startMeasurement()
     shouldStopPrimary = false;
     shouldStopSecondary = false;
     xTaskCreatePinnedToCore(readFromPrimary, "read_acc", 2000, NULL, configMAX_PRIORITIES, &xAccelerometerHandler, 1);
-    xTaskCreatePinnedToCore(readFromSecondary, "read_acc_second", 2000, NULL, 2, &xAccelerometerHandlerSecondary, 0);
+    xTaskCreatePinnedToCore(readFromSecondary, "read_acc_second", 2000, NULL, configMAX_PRIORITIES, &xAccelerometerHandlerSecondary, 0);
     if (PRINT_SAMPLES)
         xTaskCreate(samplesPerSec, "samples_per_sec", 2000, NULL, 1, NULL);
 

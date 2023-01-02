@@ -17,6 +17,7 @@
 #include "characteristics/calibrate.h"
 #include "characteristics/recordingId.h"
 #include "characteristics/battery.h"
+#include "characteristics/samples.h"
 
 #define DEVICE_NAME "Railway Diagnostics"
 uint8_t ble_addr_type;
@@ -69,6 +70,11 @@ static const struct ble_gatt_svc_def gat_svcs[] = {
             .uuid = BLE_UUID128_DECLARE(0xee, 0xdd, 0xfa, 0xd0, 0xaf, 0x51, 0x4e, 0xc6, 0x8a, 0x7b, 0xc0, 0x1e, 0x66, 0x42, 0x71, 0xd7), 
             .flags = BLE_GATT_CHR_F_READ, 
             .access_cb = bt_battery_handler
+            },
+            {
+            .uuid = BLE_UUID128_DECLARE(0xee, 0xdd, 0xfa, 0xd1, 0xaf, 0x51, 0x4e, 0xc6, 0x8a, 0x7b, 0xc0, 0x1e, 0x66, 0x42, 0x71, 0xd7),
+            .flags = BLE_GATT_CHR_F_READ,
+            .access_cb = bt_samples_handler
             },
             {0}
         }

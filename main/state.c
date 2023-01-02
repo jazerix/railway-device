@@ -18,6 +18,10 @@ static bool connected = false;
 extern uint8_t state = STATE_NOT_CALIBRATED;
 extern uint32_t recordingId = 0;
 extern int64_t startTime = 0;
+
+extern uint32_t samplesPrimary = 0;
+extern uint32_t samplesSecondary = 0;
+
 extern struct OffsetData offsets = {
     .x = 0,
     .y = 0,
@@ -54,7 +58,8 @@ void startRecording()
         ESP_LOGI(TAG, "No connection has been made to the device, recording can't be started");
         return;
     }
-
+    samplesPrimary = 0;
+    samplesSecondary = 0;
     recordingId = getRecordCouter();
     startTime = esp_timer_get_time();
     initWriteBuffer();
